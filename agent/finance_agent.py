@@ -14,25 +14,36 @@ os.environ["OPENAI_API_BASE"] = (
     "https://alchemyst-ai.com/api/v1/proxy/https://api.openai.com/v1/"
 )
 
+import requests
+
+# Check connectivity to Alchemyst proxy endpoint
+try:
+    resp = requests.get("https://alchemyst-ai.com/api/v1/")
+    if resp.status_code >= 400:
+        raise RuntimeError(
+            "Cannot reach Alchemyst proxy endpoint. Status code: {}".format(
+                resp.status_code
+            )
+        )
+except Exception as e:
+    raise RuntimeError(f"Failed to connect to Alchemyst proxy endpoint: {e}")
+
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from .tools import hr_tools
+from .tools import finance_tools
 import openai
 
 
-class HRAgent:
+class FinanceAgent:
     def __init__(self):
-        self.llm = ChatOpenAI(
-            model="gpt-3.5-turbo",
-            temperature=0,
-        )
-        self.tools = hr_tools()
+        self.llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+        self.tools = finance_tools()
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 (
                     "system",
-                    "You're an HR expert. Answer questions about policies, benefits, and onboarding.",
+                    "You're a Finance expert. Answer questions about budgets, expenses, and reimbursements.",
                 ),
                 ("placeholder", "{chat_history}"),
                 ("human", "{input}"),

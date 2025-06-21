@@ -17,22 +17,19 @@ os.environ["OPENAI_API_BASE"] = (
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
-from .tools import hr_tools
+from .tools import it_tools
 import openai
 
 
-class HRAgent:
+class ITAgent:
     def __init__(self):
-        self.llm = ChatOpenAI(
-            model="gpt-3.5-turbo",
-            temperature=0,
-        )
-        self.tools = hr_tools()
+        self.llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+        self.tools = it_tools()
         self.prompt = ChatPromptTemplate.from_messages(
             [
                 (
                     "system",
-                    "You're an HR expert. Answer questions about policies, benefits, and onboarding.",
+                    "You're an IT expert. Answer questions about technical support, access, and troubleshooting.",
                 ),
                 ("placeholder", "{chat_history}"),
                 ("human", "{input}"),

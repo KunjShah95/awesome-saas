@@ -1,16 +1,23 @@
 import streamlit as st
 import requests
 
-# MCP Server endpoint
-MCP_URL = "http://localhost:8000/mcp/agent"
+AGENT_ENDPOINTS = {
+    "HR Agent": "http://localhost:8000/mcp/agent/hr",
+    "Finance Agent": "http://localhost:8000/mcp/agent/finance",
+    "IT Agent": "http://localhost:8000/mcp/agent/it",
+}
 
-st.title("🤖 HR Agent Portal")
+st.title("🤖 Multi-Agent Portal")
 st.caption("Powered by Alchemyst AI")
 
-question = st.text_input("Ask HR questions:")
+agent_choice = st.selectbox("Choose an agent:", list(AGENT_ENDPOINTS.keys()))
+question = st.text_input(f"Ask {agent_choice} questions:")
+
 if st.button("Submit") and question:
-    with st.spinner("Consulting HR policies..."):
-        response = requests.post(MCP_URL, json={"input": question})
+    with st.spinner(f"Consulting {agent_choice}..."):
+        response = requests.post(
+            AGENT_ENDPOINTS[agent_choice], json={"input": question}
+        )
         if response.status_code == 200:
             st.success(response.json()["output"])
         else:
